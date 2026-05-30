@@ -1,0 +1,9 @@
+- Python
+- requests
+- pandas
+- json
+- pathlib
+- matplotlib
+- seaborn
+- Jupyter Notebook
+- UniProt REST API

@@ -1,32 +1,50 @@
-# UniProt Protein Annotation ETL Pipeline
+# Cancer-Related Protein Annotation ETL Pipeline
 
 ## Overview
 
-This repository contains a Python-based ETL pipeline for extracting, transforming, and analyzing protein annotation data from the UniProt REST API.
+This repository contains a Python-based ETL pipeline for extracting, transforming, and analyzing cancer-related protein annotation data from the UniProt REST API.
 
-The project focuses on human proteins related to a selected biological topic and converts nested JSON API responses into structured, analysis-ready datasets. The resulting data is used for exploratory analysis of protein properties such as sequence length, annotation quality, biological keywords, and subcellular localization.
+The project focuses on human proteins associated with cancer biology and converts nested JSON API responses into structured, analysis-ready datasets. The processed data is then used for exploratory data analysis of protein properties such as sequence length, annotation quality, biological keywords, functional descriptions, and subcellular localization.
 
 ## Project Motivation
 
-Public biological databases contain large amounts of structured and semi-structured information. However, this data often needs to be extracted from APIs, cleaned, normalized, and transformed before it can be used for downstream analysis.
+Cancer is driven by complex molecular processes involving genes, proteins, signaling pathways, mutations, and changes in cellular regulation. Public biological databases such as UniProt provide rich protein-level information that can support exploratory research into cancer-associated proteins.
 
-This project demonstrates how REST API data from a major life-science database can be turned into a reproducible data science workflow using Python.
+However, API responses from biological databases are often deeply nested and require careful parsing before they can be analyzed. This project demonstrates how cancer-related protein data can be extracted from a public life-science API, transformed into clean tabular data, and explored using Python-based data science methods.
 
 ## Data Source
 
 The data is collected from the UniProt REST API.
 
-UniProt provides curated and computationally annotated information about proteins, including:
+UniProt provides information about proteins, including:
 
+- Protein accession IDs
 - Protein names
 - Gene names
 - Organism information
-- Protein sequences
+- Protein sequence length
 - Functional annotations
-- Keywords
+- Biological keywords
 - Subcellular locations
 - Annotation scores
 - Reviewed status
+
+This project focuses on human cancer-related protein records.
+
+## Research Focus
+
+The central research focus of this project is:
+
+**What are the common structural and annotation patterns among human cancer-related proteins available in UniProt?**
+
+The analysis investigates questions such as:
+
+- Which cancer-related proteins are retrieved from UniProt?
+- What is the distribution of protein sequence lengths?
+- Which biological keywords occur most frequently?
+- Which subcellular locations are most common?
+- How complete are the annotations for these proteins?
+- Are there visible patterns between protein length and annotation score?
 
 ## Pipeline Architecture
 
@@ -34,15 +52,17 @@ The project follows a simple ETL structure:
 
 ### Extract
 
-The extraction step sends API requests to UniProt and stores the raw JSON responses locally.
+The extraction step sends API requests to the UniProt REST API and stores the raw JSON responses locally.
 
-Raw data is saved in:
+The API query is designed to retrieve human proteins associated with cancer-related terms.
+
+Raw API responses are saved in:
 
 data/raw/
 
 ### Transform
 
-The transformation step parses the nested JSON structure and converts selected protein attributes into a clean tabular format.
+The transformation step parses the nested JSON response and extracts selected protein attributes into a clean pandas DataFrame.
 
 The processed dataset includes fields such as:
 
@@ -53,7 +73,7 @@ The processed dataset includes fields such as:
 - Sequence length
 - Reviewed status
 - Annotation score
-- Keywords
+- Biological keywords
 - Subcellular location
 - Functional comments
 
@@ -63,7 +83,7 @@ data/processed/
 
 ### Load
 
-The cleaned dataset is exported as a CSV file and used for exploratory data analysis.
+The cleaned dataset is exported as a CSV file for downstream analysis.
 
 Optional output formats may include:
 
@@ -72,89 +92,78 @@ Optional output formats may include:
 
 ## Exploratory Data Analysis
 
-The analysis investigates patterns in the protein dataset, including:
+The exploratory analysis focuses on describing and visualizing the cancer-related protein dataset.
 
-- Distribution of protein sequence lengths
-- Most frequent biological keywords
-- Most common subcellular locations
-- Relationship between protein length and annotation score
-- Differences between reviewed and unreviewed entries
+Planned analyses include:
+
+- Summary statistics of protein sequence lengths
+- Distribution of annotation scores
+- Frequency analysis of biological keywords
+- Frequency analysis of subcellular locations
+- Comparison of reviewed and unreviewed UniProt entries
+- Exploration of the relationship between protein length and annotation score
 
 ## Visualizations
 
-The project includes visual summaries created with Matplotlib and/or Seaborn, such as:
+The project includes visual summaries created with Matplotlib and/or Seaborn.
 
-- Histogram of protein sequence lengths
-- Bar chart of frequent UniProt keywords
+Example visualizations include:
+
+- Histogram of cancer-related protein sequence lengths
+- Bar chart of the most frequent UniProt keywords
 - Bar chart of common subcellular locations
 - Scatter plot of protein length versus annotation score
+- Count plot of reviewed versus unreviewed records
 
 Figures are saved in:
 
 reports/figures/
 
-## Technologies Used
-
-- Python
-- requests
-- pandas
-- json
-- pathlib
-- matplotlib
-- seaborn
-- Jupyter Notebook
-- UniProt REST API
-
 ## Key Features
 
-- API-based data extraction from UniProt
+- API-based extraction of cancer-related protein records from UniProt
 - Local storage of raw JSON responses
 - Parsing of nested JSON structures
-- Transformation into a clean pandas DataFrame
+- Transformation into a clean tabular dataset
 - Export of processed data as CSV
-- Exploratory analysis of protein annotations
-- Reproducible project structure for data science workflows
-
-## Example Research Focus
-
-The pipeline can be configured for different biological topics, such as:
-
-- Human kinases
-- Mitochondrial proteins
-- Cancer-related proteins
-- Antibiotic resistance proteins
-- Proteins involved in glucose metabolism
-- Neurodegeneration-related proteins
+- Exploratory data analysis of cancer-related protein annotations
+- Scientific visualizations for portfolio presentation
+- Reproducible GitHub project structure
 
 ## Current Scope
 
-The initial version focuses on a selected set of human proteins retrieved from UniProt. The project emphasizes clean data engineering, readable code, and exploratory analysis rather than advanced machine learning.
+The current version focuses on human cancer-related proteins retrieved from UniProt. The project emphasizes API usage, JSON parsing, ETL design, clean data transformation, and exploratory analysis.
+
+This project does not aim to make clinical claims or diagnostic predictions. The analysis is exploratory and intended for learning data engineering and data science workflows in a life-science context.
 
 ## Future Improvements
 
 Potential extensions include:
 
-- Adding command-line arguments for different search topics
-- Comparing proteins across organisms
+- Refining the UniProt query strategy for more specific cancer-related protein groups
+- Comparing oncogenes and tumor suppressor proteins
+- Adding pathway-level information from external APIs
+- Integrating gene-level metadata from Ensembl
 - Storing processed data in SQLite
 - Adding unit tests for transformation functions
 - Building an interactive Streamlit dashboard
-- Enriching the dataset with data from other biological APIs
-- Adding automated logging and pipeline validation
+- Adding logging and validation to the ETL pipeline
+- Comparing reviewed and unreviewed UniProt records
 
 ## Skills Demonstrated
 
 This project demonstrates practical skills in:
 
 - REST API usage
-- JSON parsing
+- JSON data extraction
 - ETL pipeline design
 - Bioinformatics data handling
+- Nested JSON parsing
 - Data cleaning with pandas
 - Exploratory data analysis
 - Scientific visualization
-- Reproducible GitHub project organization
+- Reproducible GitHub repository organization
 
 ## Status
 
-In development.
+In development

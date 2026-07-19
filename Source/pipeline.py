@@ -5,29 +5,45 @@ import pprint
 
 base_url = "https://rest.uniprot.org/uniprotkb/search"
 
+def get_raw_request(organism_id: int, search_term: str, size: int):
+
+    if not isinstance(organism_id, int) or organism_id <= 0:
+        raise ValueError("organism_id must be a positive integer!")
+    
+    if not isinstance(search_term, str) or not search_term.strip():
+        raise ValueError("search_term must be a non-empty string!")
+    
+    if not isinstance(size, int) or size <= 0:
+        raise ValueError("size must be a positive integer!")
+    
+    query = f'{organism_id} AND {search_term} AND reviewed%3Atrue&size={size}'
+    get_url = f'{base_url}?query={query}'
+
+    
+    try:
+        response = requests.get(get_url, timeout=30)
+        response.raise_for_status()
+    
+    except requests.exceptions.Timeout as exc:
+        raise RuntimeError("The UniProt request timed out") from exc
+    
+    except requests.exceptions.ConnectionError as exc:
+        raise RuntimeError("Could not connect to the UniProt API.") from exc
+
+    except requests.exceptions.HTTPError as exc:
+        raise RuntimeError(f' UniProt returned HTTP {response.status_code}:{response.text[:300]}') from exc
+
+    except requests.exceptions.RequestException as exc:
+        raise RuntimeError(f'The UniProt request failed: {exc}') from exc
+
+    return response.json()
+
 #Parameters and Query
-organism = "organism_id:9606" #=human
+organism = 9606 #=human
 search_term = "cancer"
 size = 10
 
-query = f'{organism} AND {search_term} AND reviewed%3Atrue&size={size}'
-
-#URL
-get_url = f'{base_url}?query={query}'
-response = requests.get(get_url)
-
-if response.status_code == 200:
-    dataset = response.json()
-else:
-    print(f'Error at request: {response}')
-
-#API Test
-print(f'''
-response.status_code:           {response.status_code}
-dataset.keys():                 {dataset.keys()}
-len(dataset["results"]):        {len(dataset["results"])}
-dataset["results"][0].keys():   {dataset["results"][0].keys()}
-''')
+dataset = get_raw_request(organism, search_term, size)
 
 record = dataset["results"][0]
 

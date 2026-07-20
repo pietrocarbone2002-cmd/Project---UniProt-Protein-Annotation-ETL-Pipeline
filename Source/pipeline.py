@@ -61,10 +61,10 @@ raw_path = Path("Data/Raw")
 raw_path.mkdir(parents=True, exist_ok=True)
 now = arrow.now()
 
-# raw_file = raw_path / f"uniprot_cancer_raw_{now.format("YYYY_MM_DD_HHmmss")}.json"
+raw_file = raw_path / f"uniprot_{organism}_{search_term}_{size}_raw_{now.format("YYYY_MM_DD_HHmmss")}.json"
 
-# with raw_file.open("w", encoding="utf-8") as file:
-#     json.dump(dataset, file, indent=4)
+with raw_file.open("w", encoding="utf-8") as file:
+    json.dump(dataset, file, indent=4)
 
 #=====================================================================================================
 #           TRANSFORM
@@ -112,18 +112,23 @@ processed_data = transform_data(dataset)
 processed_path = Path("Data/Processed")
 processed_path.mkdir(parents=True, exist_ok=True)
 
-processed_file = processed_path / f"uniprot_cancer_processed_{now.format("YYYY_MM_DD_HHmmss")}.json"
+processed_file = processed_path / f"uniprot_{organism}_{search_term}_{size}_processed_{now.format("YYYY_MM_DD_HHmmss")}.json"
 
 with processed_file.open("w", encoding="utf-8") as file:
     json.dump(processed_data, file, indent=4)
 
 #Transforming the processed data into a pandas DataFrame
 df = pd.DataFrame(processed_data)
-print(df)
-
 
 #=====================================================================================================
 #           Load
 #=====================================================================================================
 
+report_path = Path("Reports")
+report_path.mkdir(parents=True, exist_ok=True)
+
+df.to_csv(
+    report_path / f"Report_Uniprot_{organism}_{search_term}_{size}_{now.format("YYYY_MM_DD_HHmmss")}.csv",
+    index = False, 
+    sep= ",")
 

@@ -61,10 +61,10 @@ raw_path = Path("Data/Raw")
 raw_path.mkdir(parents=True, exist_ok=True)
 now = arrow.now()
 
-raw_file = raw_path / f"uniprot_cancer_raw_{now.format("YYYY_MM_DD_HHmmss")}.json"
+# raw_file = raw_path / f"uniprot_cancer_raw_{now.format("YYYY_MM_DD_HHmmss")}.json"
 
-with raw_file.open("w", encoding="utf-8") as file:
-    json.dump(dataset, file, indent=4)
+# with raw_file.open("w", encoding="utf-8") as file:
+#     json.dump(dataset, file, indent=4)
 
 #=====================================================================================================
 #           TRANSFORM
@@ -104,13 +104,23 @@ def transform_data(data:dict):
 
         flat_records.append(flat_record)
 
-    #Create the DataFrame
-    df = pd.DataFrame(flat_records)
+    return flat_records
 
-    #Return the transformed record
-    return df[["Accession","Protein Name", "Gene Name", "Organism Name", "Sequence Length"]]
+processed_data = transform_data(dataset)
 
-transform_data(dataset)
+#Saving processed data as JSON
+processed_path = Path("Data/Processed")
+processed_path.mkdir(parents=True, exist_ok=True)
+
+processed_file = processed_path / f"uniprot_cancer_processed_{now.format("YYYY_MM_DD_HHmmss")}.json"
+
+with processed_file.open("w", encoding="utf-8") as file:
+    json.dump(processed_data, file, indent=4)
+
+#Transforming the processed data into a pandas DataFrame
+df = pd.DataFrame(processed_data)
+print(df)
+
 
 #=====================================================================================================
 #           Load

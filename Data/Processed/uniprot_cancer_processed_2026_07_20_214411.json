@@ -1,0 +1,72 @@
+[
+    {
+        "Accession": "Q9Y238",
+        "Protein Name": "DLC-1",
+        "Gene Name": "DLEC1",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 1755
+    },
+    {
+        "Accession": "P51587",
+        "Protein Name": null,
+        "Gene Name": "BRCA2",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 3418
+    },
+    {
+        "Accession": "Q5HYN5",
+        "Protein Name": null,
+        "Gene Name": "CT45A1",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 189
+    },
+    {
+        "Accession": "O00559",
+        "Protein Name": null,
+        "Gene Name": "EBAG9",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 213
+    },
+    {
+        "Accession": "P38398",
+        "Protein Name": null,
+        "Gene Name": "BRCA1",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 1863
+    },
+    {
+        "Accession": "Q8TC20",
+        "Protein Name": "CT3",
+        "Gene Name": "CAGE1",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 777
+    },
+    {
+        "Accession": "Q9HCU9",
+        "Protein Name": null,
+        "Gene Name": "BRMS1",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 246
+    },
+    {
+        "Accession": "P62952",
+        "Protein Name": "Bc10",
+        "Gene Name": "BLCAP",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 87
+    },
+    {
+        "Accession": "O75638",
+        "Protein Name": null,
+        "Gene Name": "CTAG2",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 210
+    },
+    {
+        "Accession": "P23508",
+        "Protein Name": null,
+        "Gene Name": "MCC",
+        "Organism Name": "Homo sapiens",
+        "Sequence Length": 829
+    }
+]

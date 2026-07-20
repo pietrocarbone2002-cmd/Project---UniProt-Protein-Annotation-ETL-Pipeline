@@ -2,12 +2,15 @@ import requests
 import json
 import sys
 import pprint
-
-BASE_URL = "https://rest.uniprot.org/uniprotkb/search"
+from pathlib import Path
+import arrow
+import pandas as pd
 
 #=====================================================================================================
 #           EXTRACT
 #=====================================================================================================
+
+BASE_URL = "https://rest.uniprot.org/uniprotkb/search"
 
 def get_uniprot_data(organism_id: int, search_term: str, size: int):
 
@@ -53,42 +56,64 @@ size = 10
 #Data fetching
 dataset = get_uniprot_data(organism, search_term, size)
 
-#Expection of the first row
+#Saving raw data as JSON
+raw_path = Path("Data/Raw")
+raw_path.mkdir(parents=True, exist_ok=True)
+now = arrow.now()
 
-first_record = dataset["results"][0]
+raw_file = raw_path / f"uniprot_cancer_raw_{now.format("YYYY_MM_DD_HHmmss")}.json"
 
-print(f'''
-Primary Accession:          {first_record['primaryAccession']}
-Protein Name:               {first_record['proteinDescription']['alternativeNames'][0]['shortNames'][0]['value']}
-Gene Name:                  {first_record['genes'][0]['geneName']['value']}
-Organism Scientific Name:   {first_record['organism']['scientificName']}
-Sequence Length:            {first_record['sequence']['length']}
-''')
-
-flat_record = {
-    "accession":first_record['primaryAccession'],
-    "protein_name":first_record['proteinDescription']['alternativeNames'][0]['shortNames'][0]['value'],
-    "gene_name" : first_record['genes'][0]['geneName']['value'],
-    "organism_scientific_name":first_record['organism']['scientificName'],
-    "sequence_length": first_record['sequence']['length']
-}
-
-print(flat_record)
+with raw_file.open("w", encoding="utf-8") as file:
+    json.dump(dataset, file, indent=4)
 
 #=====================================================================================================
 #           TRANSFORM
 #=====================================================================================================
 
-def tranform_data():
-    
+def transform_data(data:dict):
+
     #Validate the input
+    if not isinstance(data, dict):
+        raise TypeError("The Data is not in a supported format!")
 
     #Extract values
+    flat_records = []
+    for i in dataset["results"]:
 
-    #Clean or normalize values
+        #Check if there is a protein name. If not -> None. This prevents error when data is missing
+        protein_name = None
+        try:
+            protein_name = (i["proteinDescription"]["alternativeNames"][0]["shortNames"][0]["value"])
+        except (KeyError, IndexError, TypeError):
+            protein_name = None
 
-    #Build the output structure
+        #Check if there is a gene name. If not -> None. This prevents error when data is missing
+        gene_name = None
+        try:
+            gene_name = i["genes"][0]["geneName"]["value"]
+        except (KeyError, IndexError, TypeError):
+            gene_name = None
+
+        flat_record = {
+            "Accession": i.get("primaryAccession"),
+            "Protein Name": protein_name,
+            "Gene Name": gene_name,
+            "Organism Name": i.get("organism", {}).get("scientificName"),
+            "Sequence Length": i.get("sequence", {}).get("length"),
+        }
+
+        flat_records.append(flat_record)
+
+    #Create the DataFrame
+    df = pd.DataFrame(flat_records)
 
     #Return the transformed record
+    return df[["Accession","Protein Name", "Gene Name", "Organism Name", "Sequence Length"]]
 
-    pass
+transform_data(dataset)
+
+#=====================================================================================================
+#           Load
+#=====================================================================================================
+
+

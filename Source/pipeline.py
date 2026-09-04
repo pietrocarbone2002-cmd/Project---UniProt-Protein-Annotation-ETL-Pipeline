@@ -1,10 +1,9 @@
 import requests
 import json
-import sys
-import pprint
 from pathlib import Path
 import arrow
 import pandas as pd
+from fpdf import FPDF
 
 #=====================================================================================================
 #           EXTRACT
@@ -56,15 +55,15 @@ size = 10
 #Data fetching
 dataset = get_uniprot_data(organism, search_term, size)
 
-#Saving raw data as JSON
-raw_path = Path("Data/Raw")
-raw_path.mkdir(parents=True, exist_ok=True)
+# #Saving raw data as JSON
+# raw_path = Path("Data/Raw")
+# raw_path.mkdir(parents=True, exist_ok=True)
 now = arrow.now()
 
-raw_file = raw_path / f"uniprot_{organism}_{search_term}_{size}_raw_{now.format("YYYY_MM_DD_HHmmss")}.json"
+# raw_file = raw_path / f"uniprot_{organism}_{search_term}_{size}_raw_{now.format("YYYY_MM_DD_HHmmss")}.json"
 
-with raw_file.open("w", encoding="utf-8") as file:
-    json.dump(dataset, file, indent=4)
+# with raw_file.open("w", encoding="utf-8") as file:
+#     json.dump(dataset, file, indent=4)
 
 #=====================================================================================================
 #           TRANSFORM
@@ -108,27 +107,71 @@ def transform_data(data:dict):
 
 processed_data = transform_data(dataset)
 
-#Saving processed data as JSON
-processed_path = Path("Data/Processed")
-processed_path.mkdir(parents=True, exist_ok=True)
+# #Saving processed data as JSON
+# processed_path = Path("Data/Processed")
+# processed_path.mkdir(parents=True, exist_ok=True)
 
-processed_file = processed_path / f"uniprot_{organism}_{search_term}_{size}_processed_{now.format("YYYY_MM_DD_HHmmss")}.json"
+# processed_file = processed_path / f"uniprot_{organism}_{search_term}_{size}_processed_{now.format("YYYY_MM_DD_HHmmss")}.json"
 
-with processed_file.open("w", encoding="utf-8") as file:
-    json.dump(processed_data, file, indent=4)
+# with processed_file.open("w", encoding="utf-8") as file:
+#     json.dump(processed_data, file, indent=4)
 
-#Transforming the processed data into a pandas DataFrame
-df = pd.DataFrame(processed_data)
+# #Transforming the processed data into a pandas DataFrame
+# df = pd.DataFrame(processed_data)
 
 #=====================================================================================================
-#           Load
+#           LOAD
 #=====================================================================================================
 
 report_path = Path("Reports")
 report_path.mkdir(parents=True, exist_ok=True)
 
-df.to_csv(
-    report_path / f"Report_Uniprot_{organism}_{search_term}_{size}_{now.format("YYYY_MM_DD_HHmmss")}.csv",
-    index = False, 
-    sep= ",")
+# #Create a .csv Report
+# df.to_csv(
+#     report_path / f"Report_Uniprot_{organism}_{search_term}_{size}_{now.format("YYYY_MM_DD_HHmmss")}.csv",
+#     index = False, 
+#     sep= ",")
+
+#Create a pdf report
+
+report_title = f"UniProt PDF Rerpot - {organism}/{search_term}/{size}"
+
+class PDF(FPDF):
+
+    def header(self):
+        
+        self.set_font("helvetica", "B", 16)
+
+        #Calculate the width of title and position
+        title_w = self.get_string_width(report_title) + 6
+        doc_w = self.w
+        self.set_x((doc_w - title_w)/2)
+
+        #Thickness of the frame (border)
+        self.set_line_width(1)
+
+        #Title
+        self.cell(title_w, 10, report_title, align = "C")
+        self.ln(10)
+
+    def footer(self):
+
+        #Footer formatting
+        self.set_y(-15)
+        self.set_font("helvetica", "I", 10)
+        self.set_text_color(169,169,169)
+
+        #Page counter
+        self.cell(0, 10, f"Page {self.page_no()}/{{nb}}", align = "R", ln=False)
+
+        #File Name
+        self.cell(0, 10, f"uniprot_{organism}_{search_term}_{size}_processed_{now.format("YYYY_MM_DD_HHmmss")}.json", align = "L")
+
+pdf = PDF("P", "mm", "A4")
+pdf.set_title = report_title
+
+pdf.add_page()
+
+
+pdf.output(f"{report_path}/Report_Uniprot_{organism}_{search_term}_{size}_{now.format("YYYY_MM_DD_HHmmss")}.pdf")
 
